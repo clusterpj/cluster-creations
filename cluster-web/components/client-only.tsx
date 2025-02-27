@@ -8,11 +8,16 @@ interface ClientOnlyProps {
 }
 
 export default function ClientOnly({ children, fallback = null }: ClientOnlyProps) {
-  const [isClient, setIsClient] = useState(false)
+  const [hasMounted, setHasMounted] = useState(false)
 
   useEffect(() => {
-    setIsClient(true)
+    setHasMounted(true)
   }, [])
 
-  return isClient ? <>{children}</> : <>{fallback}</>
+  // Prevent hydration errors by not rendering anything on the server
+  if (!hasMounted) {
+    return <>{fallback}</> || null
+  }
+
+  return <>{children}</>
 }
